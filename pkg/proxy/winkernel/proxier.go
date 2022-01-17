@@ -708,7 +708,7 @@ func NewProxier(
 	if isIPv6 {
 		ipFamily = v1.IPv6Protocol
 	}
-	serviceChanges := proxy.NewServiceChangeTracker(proxier.newServiceInfo, ipFamily, recorder, proxier.serviceMapChange)
+	serviceChanges := proxy.NewServiceChangeTracker(hostname, proxier.newServiceInfo, ipFamily, recorder, proxier.serviceMapChange)
 	endPointChangeTracker := proxy.NewEndpointChangeTracker(hostname, proxier.newEndpointInfo, ipFamily, recorder, proxier.endpointsMapChange)
 	proxier.endpointsChanges = endPointChangeTracker
 	proxier.serviceChanges = serviceChanges

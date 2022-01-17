@@ -58,6 +58,8 @@ type BaseServiceInfo struct {
 	hintsAnnotation          string
 }
 
+const serviceDrainingNodeKey = "azure.signalr/draining"
+
 var _ ServicePort = &BaseServiceInfo{}
 
 // String is part of ServicePort interface.
@@ -216,11 +218,25 @@ func (sct *ServiceChangeTracker) newBaseServiceInfo(port *v1.ServicePort, servic
 	}
 
 	if apiservice.NeedsHealthCheck(service) {
-		p := service.Spec.HealthCheckNodePort
-		if p == 0 {
-			klog.ErrorS(nil, "Service has no healthcheck nodeport", "service", klog.KObj(service))
-		} else {
-			info.healthCheckNodePort = int(p)
+		//check if current node is drained from load balancer for this service
+		nodesStr, exist := service.Annotations[serviceDrainingNodeKey]
+		drain := false
+		if exist {
+			nodes := strings.Split(nodesStr, ",")
+			for _, node := range nodes {
+				if node == sct.hostname {
+					drain = true
+					break
+				}
+			}
+		}
+		if !drain {
+			p := service.Spec.HealthCheckNodePort
+			if p == 0 {
+				klog.ErrorS(nil, "Service has no healthcheck nodeport", "service", klog.KObj(service))
+			} else {
+				info.healthCheckNodePort = int(p)
+			}
 		}
 	}
 
@@ -244,6 +260,8 @@ type serviceChange struct {
 // ServiceChangeTracker carries state about uncommitted changes to an arbitrary number of
 // Services, keyed by their namespace and name.
 type ServiceChangeTracker struct {
+	// hostname, used to detect if local health check for this service should be drained
+	hostname string
 	// lock protects items.
 	lock sync.Mutex
 	// items maps a service to its serviceChange.
@@ -257,8 +275,9 @@ type ServiceChangeTracker struct {
 }
 
 // NewServiceChangeTracker initializes a ServiceChangeTracker
-func NewServiceChangeTracker(makeServiceInfo makeServicePortFunc, ipFamily v1.IPFamily, recorder events.EventRecorder, processServiceMapChange processServiceMapChangeFunc) *ServiceChangeTracker {
+func NewServiceChangeTracker(hostname string, makeServiceInfo makeServicePortFunc, ipFamily v1.IPFamily, recorder events.EventRecorder, processServiceMapChange processServiceMapChangeFunc) *ServiceChangeTracker {
 	return &ServiceChangeTracker{
+		hostname:                hostname,
 		items:                   make(map[types.NamespacedName]*serviceChange),
 		makeServiceInfo:         makeServiceInfo,
 		recorder:                recorder,

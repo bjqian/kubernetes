@@ -143,7 +143,7 @@ func NewFakeProxier(ipt utiliptables.Interface, ipvs utilipvs.Interface, ipset u
 	p := &Proxier{
 		exec:                  fexec,
 		serviceMap:            make(proxy.ServiceMap),
-		serviceChanges:        proxy.NewServiceChangeTracker(newServiceInfo, ipFamily, nil, nil),
+		serviceChanges:        proxy.NewServiceChangeTracker("", newServiceInfo, ipFamily, nil, nil),
 		endpointsMap:          make(proxy.EndpointsMap),
 		endpointsChanges:      proxy.NewEndpointChangeTracker(testHostname, nil, ipFamily, nil, nil),
 		excludeCIDRs:          excludeCIDRs,

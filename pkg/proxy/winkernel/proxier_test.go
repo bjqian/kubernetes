@@ -135,7 +135,7 @@ func NewFakeProxier(syncPeriod time.Duration, minSyncPeriod time.Duration, clust
 		endPointsRefCount:   make(endPointsReferenceCountMap),
 	}
 
-	serviceChanges := proxy.NewServiceChangeTracker(proxier.newServiceInfo, v1.IPv4Protocol, nil, proxier.serviceMapChange)
+	serviceChanges := proxy.NewServiceChangeTracker("", proxier.newServiceInfo, v1.IPv4Protocol, nil, proxier.serviceMapChange)
 	endpointChangeTracker := proxy.NewEndpointChangeTracker(hostname, proxier.newEndpointInfo, v1.IPv4Protocol, nil, proxier.endpointsMapChange)
 	proxier.endpointsChanges = endpointChangeTracker
 	proxier.serviceChanges = serviceChanges

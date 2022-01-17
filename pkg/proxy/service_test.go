@@ -465,7 +465,7 @@ func TestServiceToServiceMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			svcTracker := NewServiceChangeTracker(nil, tc.ipFamily, nil, nil)
+			svcTracker := NewServiceChangeTracker("", nil, tc.ipFamily, nil, nil)
 			// outputs
 			newServices := svcTracker.serviceToServiceMap(tc.service)
 
@@ -515,7 +515,7 @@ type FakeProxier struct {
 func newFakeProxier(ipFamily v1.IPFamily, t time.Time) *FakeProxier {
 	return &FakeProxier{
 		serviceMap:     make(ServiceMap),
-		serviceChanges: NewServiceChangeTracker(nil, ipFamily, nil, nil),
+		serviceChanges: NewServiceChangeTracker("", nil, ipFamily, nil, nil),
 		endpointsMap:   make(EndpointsMap),
 		endpointsChanges: &EndpointChangeTracker{
 			hostname:                  testHostname,
