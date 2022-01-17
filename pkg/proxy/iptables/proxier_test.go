@@ -496,7 +496,7 @@ func NewFakeProxier(ipt utiliptables.Interface) *Proxier {
 	p := &Proxier{
 		exec:                     &fakeexec.FakeExec{},
 		serviceMap:               make(proxy.ServiceMap),
-		serviceChanges:           proxy.NewServiceChangeTracker(newServiceInfo, ipfamily, nil, nil),
+		serviceChanges:           proxy.NewServiceChangeTracker("", newServiceInfo, ipfamily, nil, nil),
 		endpointsMap:             make(proxy.EndpointsMap),
 		endpointsChanges:         proxy.NewEndpointChangeTracker(testHostname, newEndpointInfo, ipfamily, nil, nil),
 		iptables:                 ipt,

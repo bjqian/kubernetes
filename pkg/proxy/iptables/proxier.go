@@ -298,7 +298,7 @@ func NewProxier(ipt utiliptables.Interface,
 	proxier := &Proxier{
 		portsMap:                 make(map[netutils.LocalPort]netutils.Closeable),
 		serviceMap:               make(proxy.ServiceMap),
-		serviceChanges:           proxy.NewServiceChangeTracker(newServiceInfo, ipFamily, recorder, nil),
+		serviceChanges:           proxy.NewServiceChangeTracker(hostname, newServiceInfo, ipFamily, recorder, nil),
 		endpointsMap:             make(proxy.EndpointsMap),
 		endpointsChanges:         proxy.NewEndpointChangeTracker(hostname, newEndpointInfo, ipFamily, recorder, nil),
 		syncPeriod:               syncPeriod,
